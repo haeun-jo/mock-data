@@ -1,0 +1,177 @@
+<!-- Styles -->
+<style>
+  #chartdiv {
+    width: 100%;
+    height: 100%;
+  }
+</style>
+
+<!-- Resources -->
+<script src="https://cdn.amcharts.com/lib/4/core.js"></script>
+<script src="https://cdn.amcharts.com/lib/4/charts.js"></script>
+<script src="https://cdn.amcharts.com/lib/4/themes/animated.js"></script>
+<script src="//cdn.amcharts.com/lib/4/themes/kelly.js"></script>
+
+<!-- Chart code -->
+<script>
+  am4core.ready(function () {
+    // Themes begin
+    am4core.useTheme(am4themes_animated);
+    am4core.useTheme(am4themes_kelly);
+    // Themes end
+
+    var chart = am4core.create("chartdiv", am4charts.XYChart);
+    chart.hiddenState.properties.opacity = 0; // this creates initial fade-in
+
+    chart.data = [
+      {
+        xAxis: "AdV",
+        keys: ["AdV"],
+        AdV: 440,
+      },
+      {
+        xAxis: "Flu A",
+        keys: ["Flu A"],
+        "Flu A": 422,
+      },
+      {
+        xAxis: "Flu B",
+        keys: ["Flu B"],
+        "Flu B": 441,
+      },
+      {
+        xAxis: "HRV",
+        keys: ["HRV"],
+        HRV: 763,
+      },
+      {
+        xAxis: "MPV",
+        keys: ["MPV"],
+        MPV: 121,
+      },
+      {
+        xAxis: "PIV",
+        keys: ["PIV"],
+        PIV: 178,
+      },
+      {
+        xAxis: "RSV",
+        keys: ["RSV"],
+        RSV: 512,
+      },
+      {
+        xAxis: "SARS-CoV-2",
+        keys: [
+          "E gene,N gene(SARS-CoV-2)",
+          "E gene,N gene,RdRP/S gene(SARS-CoV-2)",
+          "E gene,RdRP gene(2019-nCoV)",
+          "E gene,RdRP/S gene(SARS-CoV-2)",
+          "N gene(SARS-CoV-2)",
+          "N gene,RdRP/S gene(SARS-CoV-2)",
+          "RdRP gene(2019-nCoV)",
+          "RdRP/S gene(SARS-CoV-2)",
+        ],
+        "E gene,N gene(SARS-CoV-2)": 64,
+        "E gene,N gene,RdRP/S gene(SARS-CoV-2)": 1628,
+        "E gene,RdRP gene(2019-nCoV)": 8,
+        "E gene,RdRP/S gene(SARS-CoV-2)": 59,
+        "N gene(SARS-CoV-2)": 42,
+        "N gene,RdRP/S gene(SARS-CoV-2)": 57,
+        "RdRP gene(2019-nCoV)": 2,
+        "RdRP/S gene(SARS-CoV-2)": 61,
+      },
+      {
+        xAxis: "SARS-CoV-3",
+        keys: [
+          "E gene,N gene(SARS-CoV-2)",
+          "E gene,N gene,RdRP/S gene(SARS-CoV-2)",
+          "E gene,RdRP gene(2019-nCoV)",
+          "E gene,RdRP/S gene(SARS-CoV-2)",
+          "N gene(SARS-CoV-2)",
+          "N gene,RdRP/S gene(SARS-CoV-2)",
+          "RdRP gene(2019-nCoV)",
+          "RdRP/S gene(SARS-CoV-2)",
+        ],
+        "E gene,N gene(SARS-CoV-2)": 10,
+        "E gene,N gene,RdRP/S gene(SARS-CoV-2)": 20,
+        "E gene,RdRP gene(2019-nCoV)": 30,
+        "E gene,RdRP/S gene(SARS-CoV-2)": 40,
+        "N gene(SARS-CoV-2)": 50,
+        "N gene,RdRP/S gene(SARS-CoV-2)": 60,
+        "RdRP gene(2019-nCoV)": 70,
+        "RdRP/S gene(SARS-CoV-2)": 80,
+      },
+      {
+        xAxis: "SARS-CoV-2 Presumptive",
+        keys: ["SARS-CoV-2 Presumptive"],
+        "SARS-CoV-2 Presumptive": 36,
+      },
+    ];
+
+    var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
+    categoryAxis.renderer.grid.template.location = 0;
+    categoryAxis.dataFields.category = "xAxis";
+    categoryAxis.renderer.minGridDistance = 40;
+    categoryAxis.fontSize = 11;
+
+    var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+    valueAxis.min = 0;
+    valueAxis.max = 2000;
+    valueAxis.strictMinMax = true;
+    valueAxis.renderer.minGridDistance = 30;
+
+    // Create series
+    function createSeries(field, name = field, stacked = false) {
+      var series = chart.series.push(new am4charts.ColumnSeries());
+      series.dataFields.valueY = field;
+      series.dataFields.categoryX = "xAxis";
+      series.name = name;
+      series.columns.template.tooltipText = "{valueY.value}";
+      series.columns.template.tooltipY = am4core.percent(0);
+
+      series.columns.template.width = am4core.percent(70);
+    }
+
+    createSeries("AdV");
+    createSeries("Flu A");
+    createSeries("Flu B");
+    createSeries("HRV");
+    createSeries("MPV");
+    createSeries("PIV");
+    createSeries("RSV");
+    createSeries("SARS-CoV-2");
+    createSeries("SARS-CoV-3");
+    createSeries("SARS-CoV-2 Presumptive");
+
+    // Add legend
+    chart.legend = new am4charts.Legend();
+    chart.legend.position = "right";
+    chart.legend.valign = "middle";
+
+    // Create stacked series
+    function createStackedSeries(field, name = field, stacked = true) {
+      var series = chart.series.push(new am4charts.ColumnSeries());
+      series.dataFields.valueY = field;
+      series.dataFields.categoryX = "xAxis";
+      series.name = name;
+      series.columns.template.tooltipText = "{name}: [bold]{valueY}[/]";
+      series.stacked = stacked;
+      series.columns.template.width = am4core.percent(70);
+    }
+
+    createStackedSeries("E gene,N gene(SARS-CoV-2)");
+    createStackedSeries("E gene,N gene,RdRP/S gene(SARS-CoV-2)");
+    createStackedSeries("E gene,RdRP gene(2019-nCoV)");
+    createStackedSeries("E gene,RdRP/S gene(SARS-CoV-2)");
+    createStackedSeries("N gene(SARS-CoV-2)");
+    createStackedSeries("N gene,RdRP/S gene(SARS-CoV-2)");
+    createStackedSeries("RdRP gene(2019-nCoV)");
+    createStackedSeries("RdRP/S gene(SARS-CoV-2)");
+
+    // Add cursor
+    chart.cursor = new am4charts.XYCursor();
+  }); // end am4core.ready()
+</script>
+
+<!-- HTML -->
+<div id="chartdiv"></div>
